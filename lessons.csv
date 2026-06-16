@@ -1,7 +1,7 @@
- اسم الدرس|الكلمة|المعنى|الجملة|رابط الصورة
-ألوان|Blue|أزرق|The sky is blue.|https://images.unsplash.com/photo-1506744038136-46273834b3fb.jpg
-أفعال|Run|يجري|The dog can run fast.|https://images.unsplash.com/photo-1552053831-71594a27632d.jpg
-صفات|Happy|سعيد|The boy is very happy.|https://images.unsplash.com/photo-1517466787929-bc90951d0974.jpg
-أماكن|School|مدرسة|My school is beautiful.|https://images.unsplash.com/photo-1503676260728-1c00da094a0b.jpg
-طعام|Bread|خبز|I eat fresh bread.|https://images.unsplash.com/photo-1509440159596-0249088772ff.jpg
-عائلة|Father|أب|My father is kind.|https://images.unsplash.com/photo-1519631108253-83329061c77f.jpg
+  lesson_name,word,meaning,sentence,image_url
+colors,Blue,أزرق,The sky is blue.,https://via.placeholder.com/150?text=Blue
+verbs,Run,يجري,The dog can run fast.,https://via.placeholder.com/150?text=Run
+adjectives,Happy,سعيد,The boy is very happy.,https://via.placeholder.com/150?text=Happy
+places,School,مدرسة,My school is beautiful.,https://via.placeholder.com/150?text=School
+food,Bread,خبز,I eat fresh bread.,https://via.placeholder.com/150?text=Bread
+family,Father,أب,My father is kind.,https://via.placeholder.com/150?text=Father
