@@ -1,181 +1,131 @@
  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دروس مستر مبارك التفاعلية</title>
-
-<style>
-body{
-font-family:Tahoma,sans-serif;
-margin:20px;
-background:#f5f5f5;
-}
-
-h1{
-text-align:center;
-}
-
-.search-container{
-text-align:center;
-margin:20px 0;
-}
-
-#searchInput{
-width:60%;
-padding:12px;
-border:2px solid #4CAF50;
-border-radius:25px;
-font-size:16px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:10px;
-text-align:center;
-}
-
-th{
-background:#4CAF50;
-color:white;
-}
-
-img{
-width:100px;
-height:100px;
-object-fit:cover;
-border-radius:8px;
-}
-
-.speak-btn{
-background:#2196F3;
-color:white;
-border:none;
-padding:5px 8px;
-border-radius:5px;
-cursor:pointer;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دروس مستر مبارك التفاعلية</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; }
+        
+        .search-container { text-align: center; margin: 20px 0; }
+        #searchInput { 
+            width: 50%; 
+            padding: 12px 20px; 
+            font-size: 16px; 
+            border: 2px solid #4CAF50; 
+            border-radius: 25px; 
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+        img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; }
+        
+        .speak-btn {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            margin-right: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .speak-btn:hover { background-color: #007ba1; }
+    </style>
 </head>
-
 <body>
 
-<h1>دروس مستر مبارك التفاعلية</h1>
+    <h1>دروس مستر مبارك التفاعلية</h1>
 
-<div class="search-container">
-<input
-type="text"
-id="searchInput"
-placeholder="ابحث عن كلمة أو معنى أو جملة">
-</div>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="ابحث عن درس، كلمة، معنى، أو جملة...">
+    </div>
 
-<table id="lessonTable">
-<thead>
-<tr>
-<th>اسم الدرس</th>
-<th>الكلمة</th>
-<th>المعنى</th>
-<th>الجملة</th>
-<th>الصورة</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+    <table id="lessonTable">
+        <thead>
+            <tr>
+                <th>اسم الدرس</th>
+                <th>الكلمة</th>
+                <th>المعنى</th>
+                <th>الجملة</th>
+                <th>الصورة</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-<script>
+    <script>
+        let allRowsData = [];
 
-let allRowsData=[];
+        fetch('lessons.csv')
+            .then(res => res.text())
+            .then(data => {
+                const rows = data.split(/\r?\n/);
+                // تصفية الأسطر الفارغة وحفظها
+                allRowsData = rows.slice(1).filter(row => row.trim() !== '');
+                renderTable(allRowsData);
+            })
+            .catch(err => console.error('خطأ في جلب البيانات:', err));
 
-fetch('lessons.csv')
-.then(response=>response.text())
-.then(data=>{
+        function renderTable(dataToDisplay) {
+            const tbody = document.querySelector('#lessonTable tbody');
+            tbody.innerHTML = '';
 
-const rows=data.trim().split(/\r?\n/);
+            dataToDisplay.forEach(row => {
+                const cols = row.split(',');
 
-allRowsData=rows.slice(1);
+                // التأكد من أن السطر يحتوي على الأعمدة الخمسة كاملة
+                if (cols.length >= 5) {
+                    // تنظيف النص لكل عنصر داخل المصفوفة بشكل فردي وصحيح
+                    const lessonName = cols[0].trim();
+                    const word = cols[1].trim();
+                    const meaning = cols[2].trim();
+                    const sentence = cols[3].trim();
+                    const imageUrl = cols[4].trim();
 
-renderTable(allRowsData);
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${lessonName}</td>
+                        <td>
+                            <span>${word}</span>
+                            <button class="speak-btn" onclick="speakText('${word}')">🔊</button>
+                        </td>
+                        <td>${meaning}</td>
+                        <td>
+                            <span>${sentence}</span>
+                            <button class="speak-btn" onclick="speakText('${sentence}')">🔊</button>
+                        </td>
+                        <td>
+                            ${imageUrl ? `<img src="${imageUrl}" alt="صورة الدرس" onerror="this.onerror=null; this.parentNode.innerHTML='خطأ بالرابط';">` : 'لا توجد صورة'}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+        }
 
-})
-.catch(error=>console.error(error));
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // إيقاف أي صوت يعمل حالياً لمنع التداخل
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('عذرًا، متصفحك لا يدعم ميزة نطق الكلمات.');
+            }
+        }
 
-function renderTable(rows){
-
-const tbody=document.querySelector('#lessonTable tbody');
-
-tbody.innerHTML='';
-
-rows.forEach(row=>{
-
-const cols=row.split(',');
-
-if(cols.length>=5){
-
-const lessonName=cols[0];
-const word=cols[1];
-const meaning=cols[2];
-const sentence=cols[3];
-const imageUrl=cols[4];
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-<td>${lessonName}</td>
-
-<td>
-${word}
-<button class="speak-btn"
-onclick="speakText('${word}')">🔊</button>
-</td>
-
-<td>${meaning}</td>
-
-<td>
-${sentence}
-<button class="speak-btn"
-onclick="speakText('${sentence}')">🔊</button>
-</td>
-
-<td>
-<img src="${imageUrl}" alt="صورة">
-</td>
-`;
-
-tbody.appendChild(tr);
-}
-});
-}
-
-function speakText(text){
-
-const speech=new SpeechSynthesisUtterance(text);
-
-speech.lang='en-US';
-
-speech.rate=0.9;
-
-window.speechSynthesis.speak(speech);
-}
-
-document.getElementById('searchInput')
-.addEventListener('input',function(){
-
-const value=this.value.toLowerCase();
-
-const filtered=allRowsData.filter(row=>
-row.toLowerCase().includes(value)
-);
-
-renderTable(filtered);
-
-});
-</script>
-
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase().trim();
+            const filteredRows = allRowsData.filter(row => row.toLowerCase().includes(keyword));
+            renderTable(filteredRows);
+        });
+    </script>
 </body>
 </html>
