@@ -25,34 +25,32 @@
         </thead>
         <tbody></tbody>
     </table>
-
-    <script>
-        // استخدام fetch لقراءة ملف الـ CSV
-        fetch('lessons.csv')
-            .then(res => res.text())
-            .then(data => {
-                const rows = data.split('\n');
-                const tbody = document.querySelector('#lessonTable tbody');
-                tbody.innerHTML = '';
+ <script>
+    fetch('lessons.csv')
+        .then(res => res.text())
+        .then(data => {
+            const rows = data.split('\n');
+            const tbody = document.querySelector('#lessonTable tbody');
+            tbody.innerHTML = '';
+            
+            rows.slice(1).forEach(row => {
+                if (row.trim() === '') return;
+                // هذا السطر هو الأهم، سيقسم السطر بفاصلة وسيزيل أي مسافات
+                const cols = row.split(',').map(c => c.trim());
                 
-                rows.slice(1).forEach(row => {
-                    if (row.trim() === '') return;
-                    // تقسيم البيانات بناءً على الفاصلة
-                    const cols = row.split(',');
-                    if (cols.length >= 5) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${cols[0]}</td>
-                            <td>${cols[1]}</td>
-                            <td>${cols[2]}</td>
-                            <td>${cols[3]}</td>
-                            <td><img src="${cols[4].trim()}" alt="صورة الدرس"></td>
-                        `;
-                        tbody.appendChild(tr);
-                    }
-                });
-            })
-            .catch(err => console.error("خطأ في قراءة ملف CSV:", err));
-    </script>
+                if (cols.length >= 5) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${cols[0]}</td>
+                        <td>${cols[1]}</td>
+                        <td>${cols[2]}</td>
+                        <td>${cols[3]}</td>
+                        <td><img src="${cols[4]}" alt="صورة" style="width:100px;"></td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+        });
+</script>
 </body>
 </html>
