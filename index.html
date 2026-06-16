@@ -1,119 +1,58 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دروس مستر مبارك التفاعلية</title>
-
-<style>
-body{
-font-family:Tahoma,sans-serif;
-margin:20px;
-background:#f5f5f5;
-}
-
-h1{
-text-align:center;
-}
-
-.search-container{
-text-align:center;
-margin:20px 0;
-}
-
-#searchInput{
-width:60%;
-padding:12px;
-border:2px solid #4CAF50;
-border-radius:25px;
-font-size:16px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:10px;
-text-align:center;
-}
-
-th{
-background:#4CAF50;
-color:white;
-}
-
-img{
-width:100px;
-height:100px;
-object-fit:cover;
-border-radius:8px;
-}
-
-.speak-btn{
-background:#2196F3;
-color:white;
-border:none;
-padding:5px 8px;
-border-radius:5px;
-cursor:pointer;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>دروس مستر مبارك</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+        img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; }
+    </style>
 </head>
-
 <body>
+    <h1>دروس مستر مبارك التفاعلية</h1>
+    <table id="lessonTable">
+        <thead>
+            <tr>
+                <th>اسم الدرس</th>
+                <th>الكلمة</th>
+                <th>المعنى</th>
+                <th>الجملة</th>
+                <th>الصورة</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-<h1>دروس مستر مبارك التفاعلية</h1>
-
-<div class="search-container">
-<input
-type="text"
-id="searchInput"
-placeholder="ابحث عن كلمة أو معنى أو جملة">
-</div>
-
-<table id="lessonTable">
-<thead>
-<tr>
-<th>اسم الدرس</th>
-<th>الكلمة</th>
-<th>المعنى</th>
-<th>الجملة</th>
-<th>الصورة</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
- 
-<script>
-    fetch('lessons.csv')
-        .then(res => res.text())
-        .then(data => {
-            const rows = data.split('\n');
-            const tbody = document.querySelector('#lessonTable tbody');
-            tbody.innerHTML = '';
-            
-            rows.slice(1).forEach(row => {
-                if (row.trim() === '') return;
-                // استخدام الفاصلة العمودية هنا لتطابق ملفك
-                const cols = row.split('|'); 
+    <script>
+        // استخدام fetch لقراءة ملف الـ CSV
+        fetch('lessons.csv')
+            .then(res => res.text())
+            .then(data => {
+                const rows = data.split('\n');
+                const tbody = document.querySelector('#lessonTable tbody');
+                tbody.innerHTML = '';
                 
-                if (cols.length >= 5) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${cols[0]}</td>
-                        <td>${cols[1]}</td>
-                        <td>${cols[2]}</td>
-                        <td>${cols[3]}</td>
-                        <td><img src="${cols[4].trim()}" style="width:100px; height:100px; border-radius:8px;"></td>
-                    `;
-                    tbody.appendChild(tr);
-                }
-            });
-        });
-</script>
+                rows.slice(1).forEach(row => {
+                    if (row.trim() === '') return;
+                    // تقسيم البيانات بناءً على الفاصلة
+                    const cols = row.split(',');
+                    if (cols.length >= 5) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${cols[0]}</td>
+                            <td>${cols[1]}</td>
+                            <td>${cols[2]}</td>
+                            <td>${cols[3]}</td>
+                            <td><img src="${cols[4].trim()}" alt="صورة الدرس"></td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+            })
+            .catch(err => console.error("خطأ في قراءة ملف CSV:", err));
+    </script>
 </body>
 </html>
