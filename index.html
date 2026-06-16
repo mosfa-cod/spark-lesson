@@ -87,95 +87,33 @@ placeholder="ابحث عن كلمة أو معنى أو جملة">
 </thead>
 <tbody></tbody>
 </table>
-
+ 
 <script>
-
-let allRowsData=[];
-
-fetch('lessons.csv')
-.then(response=>response.text())
-.then(data=>{
-
-const rows=data.trim().split(/\r?\n/);
-
-allRowsData=rows.slice(1);
-
-renderTable(allRowsData);
-
-})
-.catch(error=>console.error(error));
-
-function renderTable(rows){
-
-const tbody=document.querySelector('#lessonTable tbody');
-
-tbody.innerHTML='';
-
-rows.forEach(row=>{
-
-const cols=row.split(',');
-
-if(cols.length>=5){
-
-const lessonName=cols[0];
-const word=cols[1];
-const meaning=cols[2];
-const sentence=cols[3];
-const imageUrl=cols[4];
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-<td>${lessonName}</td>
-
-<td>
-${word}
-<button class="speak-btn"
-onclick="speakText('${word}')">🔊</button>
-</td>
-
-<td>${meaning}</td>
-
-<td>
-${sentence}
-<button class="speak-btn"
-onclick="speakText('${sentence}')">🔊</button>
-</td>
-
-<td>
-<img src="${imageUrl}" alt="صورة">
-</td>
-`;
-
-tbody.appendChild(tr);
-}
-});
-}
-
-function speakText(text){
-
-const speech=new SpeechSynthesisUtterance(text);
-
-speech.lang='en-US';
-
-speech.rate=0.9;
-
-window.speechSynthesis.speak(speech);
-}
-
-document.getElementById('searchInput')
-.addEventListener('input',function(){
-
-const value=this.value.toLowerCase();
-
-const filtered=allRowsData.filter(row=>
-row.toLowerCase().includes(value)
-);
-
-renderTable(filtered);
-
-});
+    fetch('lessons.csv')
+        .then(res => res.text())
+        .then(data => {
+            const rows = data.split('\n');
+            const tbody = document.querySelector('#lessonTable tbody');
+            tbody.innerHTML = '';
+            
+            rows.slice(1).forEach(row => {
+                if (row.trim() === '') return;
+                // استخدام الفاصلة العمودية هنا لتطابق ملفك
+                const cols = row.split('|'); 
+                
+                if (cols.length >= 5) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${cols[0]}</td>
+                        <td>${cols[1]}</td>
+                        <td>${cols[2]}</td>
+                        <td>${cols[3]}</td>
+                        <td><img src="${cols[4].trim()}" style="width:100px; height:100px; border-radius:8px;"></td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+        });
 </script>
-
 </body>
 </html>
