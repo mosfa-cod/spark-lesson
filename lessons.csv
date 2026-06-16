@@ -1,7 +1,3 @@
-  lesson_name,word,meaning,sentence,image_url
-colors,Blue,أزرق,The sky is blue.,https://via.placeholder.com/150?text=Blue
-verbs,Run,يجري,The dog can run fast.,https://via.placeholder.com/150?text=Run
-adjectives,Happy,سعيد,The boy is very happy.,https://via.placeholder.com/150?text=Happy
-places,School,مدرسة,My school is beautiful.,https://via.placeholder.com/150?text=School
-food,Bread,خبز,I eat fresh bread.,https://via.placeholder.com/150?text=Bread
-family,Father,أب,My father is kind.,https://via.placeholder.com/150?text=Father
+ lesson_name,word,meaning,sentence,image_url
+colors,Blue,أزرق,The sky is blue.,1
+verbs,Run,يجري,The dog can run fast.,2
