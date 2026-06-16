@@ -33,19 +33,24 @@
             const tbody = document.querySelector('#lessonTable tbody');
             tbody.innerHTML = '';
             
+            // نبدأ من 1 لتخطي سطر العناوين
             rows.slice(1).forEach(row => {
                 if (row.trim() === '') return;
-                // هذا السطر هو الأهم، سيقسم السطر بفاصلة وسيزيل أي مسافات
-                const cols = row.split(',').map(c => c.trim());
+                
+                // نقسم السطر بالفاصلة
+                const cols = row.split(',');
                 
                 if (cols.length >= 5) {
                     const tr = document.createElement('tr');
+                    
+                    // الترتيب الجديد مطابق لملف CSV الخاص بك:
+                    // cols[0]=lesson_name, cols[1]=word, cols[2]=meaning, cols[3]=sentence, cols[4]=image_url
                     tr.innerHTML = `
                         <td>${cols[0]}</td>
                         <td>${cols[1]}</td>
                         <td>${cols[2]}</td>
                         <td>${cols[3]}</td>
-                        <td><img src="${cols[4]}" alt="صورة" style="width:100px;"></td>
+                        <td><img src="${cols[4].trim()}" alt="صورة" style="width:100px; height:100px; border-radius:8px;"></td>
                     `;
                     tbody.appendChild(tr);
                 }
