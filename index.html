@@ -65,7 +65,6 @@
             .then(res => res.text())
             .then(data => {
                 const rows = data.split(/\r?\n/);
-                // تصفية الأسطر الفارغة وحفظها
                 allRowsData = rows.slice(1).filter(row => row.trim() !== '');
                 renderTable(allRowsData);
             })
@@ -78,9 +77,7 @@
             dataToDisplay.forEach(row => {
                 const cols = row.split(',');
 
-                // التأكد من أن السطر يحتوي على الأعمدة الخمسة كاملة
                 if (cols.length >= 5) {
-                    // تنظيف النص لكل عنصر داخل المصفوفة بشكل فردي وصحيح
                     const lessonName = cols[0].trim();
                     const word = cols[1].trim();
                     const meaning = cols[2].trim();
@@ -110,7 +107,6 @@
 
         function speakText(text) {
             if ('speechSynthesis' in window) {
-                // إيقاف أي صوت يعمل حالياً لمنع التداخل
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'en-US';
