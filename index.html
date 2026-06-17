@@ -2,141 +2,70 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام الحضور التفاعلي</title>
-
-<style>
-body{
-    font-family: Tahoma;
-    background:#f4f4f4;
-    margin:0;
-    padding:20px;
-}
-
-.container{
-    max-width:600px;
-    margin:auto;
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-
-h2{
-    text-align:center;
-    color:#2c3e50;
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-    border:1px solid #ccc;
-    border-radius:5px;
-}
-
-button{
-    width:100%;
-    padding:10px;
-    background:#27ae60;
-    color:white;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    font-size:16px;
-}
-
-button:hover{
-    background:#219150;
-}
-
-.quiz{
-    margin:15px 0;
-    padding:10px;
-    background:#f9f9f9;
-    border-radius:5px;
-}
-
-.result{
-    text-align:center;
-    margin-top:15px;
-    font-weight:bold;
-}
-</style>
+<title>نظام الحضور Firebase</title>
 </head>
 
 <body>
 
-<div class="container">
+<h2>تسجيل الحضور</h2>
 
-<h2>📘 نظام تسجيل الحضور والاختبار</h2>
+<input type="text" id="studentName" placeholder="اسم الطالب">
 
-<input type="text" id="studentName" placeholder="اكتب اسمك">
-
-<div class="quiz">
-<p><b>سؤال:</b> معنى كلمة Blue ؟</p>
+<p>سؤال: معنى Blue؟</p>
 
 <label><input type="radio" name="quiz" value="100"> أزرق</label><br>
 <label><input type="radio" name="quiz" value="0"> أحمر</label><br>
-<label><input type="radio" name="quiz" value="0"> أخضر</label>
-</div>
 
-<button onclick="submitData()">تسجيل الحضور وإرسال</button>
+<button onclick="submitData()">تسجيل</button>
 
-<div class="result" id="result"></div>
+<p id="msg"></p>
 
-</div>
+<script type="module">
 
-<script>
+// 1️⃣ Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// 🔴 ضع رابط Google Apps Script هنا
-var webAppUrl = "https://script.google.com/macros/s/AKfycbzQiVyuUdNb_wg-kg8hAqjGBFMtL2EbVGuq7i4FjZ56kMY1Adt9hEtAqep2Jr1W4tJDEA/exec";
+// 2️⃣ Config (ضع بياناتك)
+const firebaseConfig = {
+  apiKey: "AIzaSyI9oAxNdAD-LHVnC-pNbJ_AyHPn1azak",
+  authDomain: "spark-attendance.firebaseapp.com",
+  projectId: "spark-attendance",
+  storageBucket: "spark-attendance.firebasestorage.app",
+  messagingSenderId: "7353997849",
+  appId: "1:7353997849:web:ab2eb7bcdd65b78e9f6888"
+};
 
-function submitData(){
+// 3️⃣ Init Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    var name = document.getElementById("studentName").value;
-    var quiz = document.querySelector('input[name="quiz"]:checked');
+// 4️⃣ Function
+window.submitData = async function(){
 
-    if(!name){
-        alert("اكتب الاسم");
-        return;
-    }
+  const name = document.getElementById("studentName").value;
+  const quiz = document.querySelector('input[name="quiz"]:checked');
 
-    if(!quiz){
-        alert("اختر إجابة");
-        return;
-    }
+  if(!name || !quiz){
+    alert("اكتب الاسم واختر الإجابة");
+    return;
+  }
 
-    var payload = {
-        name: name,
-        grade: quiz.value,
-        attendance: "حاضر"
-    };
-
-    fetch(webAppUrl, {
-        method: "POST",
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.text())
-    .then(data => {
-
-        console.log(data);
-
-        if(data === "Already Marked"){
-            document.getElementById("result").innerHTML = "⚠️ تم تسجيلك مسبقًا";
-        } else {
-            document.getElementById("result").innerHTML = "🎉 تم تسجيل الحضور بنجاح";
-        }
-
-        document.getElementById("studentName").value = "";
-        quiz.checked = false;
-
-    })
-    .catch(err => {
-        console.error(err);
-        document.getElementById("result").innerHTML = "❌ خطأ في الاتصال";
+  try {
+    await addDoc(collection(db, "attendance"), {
+      name: name,
+      grade: Number(quiz.value),
+      result: Number(quiz.value) >= 50 ? "Success" : "Fail",
+      attendance: "حاضر",
+      time: new Date()
     });
 
+    document.getElementById("msg").innerText = "✅ تم تسجيل الحضور بنجاح";
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("msg").innerText = "❌ حدث خطأ";
+  }
 }
 
 </script>
