@@ -1,74 +1,142 @@
  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>نظام الحضور Firebase</title>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الحضور التفاعلي</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            text-align: right;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        .quiz-box {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .radio-group {
+            margin-top: 10px;
+        }
+        .btn-submit {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-submit:hover {
+            background-color: #e0e0e0;
+        }
+        #msg {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
 
+    <!-- 1️⃣ تحميل مكتبات الـ Firebase المستقرة التي لا تسبب أخطاء CORS المتصفح -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+</head>
 <body>
 
-<h2>تسجيل الحضور</h2>
+    <div class="container">
+        <h2 class="title">نظام تسجيل الحضور والاختبار 📊</h2>
 
-<input type="text" id="studentName" placeholder="اسم الطالب">
+        <div style="margin-bottom: 15px;">
+            <label>اسم الطالب:</label>
+            <input type="text" id="studentName" placeholder="اكتب اسمك هنا..." class="input-field">
+        </div>
 
-<p>سؤال: معنى Blue؟</p>
+        <div class="quiz-box">
+            <p>سؤال: معنى كلمة Blue ؟</p>
+            <div class="radio-group">
+                <label><input type="radio" name="quiz" value="أزرق"> أزرق</label>
+                <label style="margin-right: 15px;"><input type="radio" name="quiz" value="أحمر"> أحمر</label>
+                <label style="margin-right: 15px;"><input type="radio" name="quiz" value="أخضر"> أخضر</label>
+            </div>
+        </div>
 
-<label><input type="radio" name="quiz" value="100"> أزرق</label><br>
-<label><input type="radio" name="quiz" value="0"> أحمر</label><br>
+        <!-- 2️⃣ ربط الزر مباشرة بالدالة لتجنب خطأ is not defined -->
+        <button onclick="submitData()" class="btn-submit">تسجيل الحضور وإرسال</button>
 
-<button onclick="submitData()">تسجيل</button>
+        <p id="msg"></p>
+    </div>
 
-<p id="msg"></p>
+    <script>
+        // إعدادات مشروعك الحالي المفتوح لديك spark-attendance
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgi9oAxNdAD-LHVnC-pNbJ_AyHPn1azak",
+            authDomain: "://firebaseapp.com",
+            projectId: "spark-attendance",
+            storageBucket: "spark-attendance.firebasestorage.app",
+            messagingSenderId: "7353997849",
+            appId: "1:7353997849:web:ab2eb7bcdd65b78e9f6888"
+        };
 
-<script type="module">
+        // 3️⃣ تهيئة نظام الفايربيس بالطريقة المتوافقة
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-// 1️⃣ Firebase imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+        // 4️⃣ دالة الإرسال الرئيسية والمطابقة للزر
+        async function submitData() {
+            const nameInput = document.getElementById("studentName");
+            const name = nameInput ? nameInput.value.trim() : "";
+            const quizChecked = document.querySelector('input[name="quiz"]:checked');
+            const msgElement = document.getElementById("msg");
 
-// 2️⃣ Config (ضع بياناتك)
-const firebaseConfig = {
-  apiKey: "AIzaSyI9oAxNdAD-LHVnC-pNbJ_AyHPn1azak",
-  authDomain: "spark-attendance.firebaseapp.com",
-  projectId: "spark-attendance",
-  storageBucket: "spark-attendance.firebasestorage.app",
-  messagingSenderId: "7353997849",
-  appId: "1:7353997849:web:ab2eb7bcdd65b78e9f6888"
-};
+            if (!name || !quizChecked) {
+                alert("الرجاء كتابة الاسم واختيار الإجابة أولاً!");
+                return;
+            }
 
-// 3️⃣ Init Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+            msgElement.style.color = "blue";
+            msgElement.innerText = "⏳ جاري الإرسال والتسجيل في Firebase...";
 
-// 4️⃣ Function
-window.submitData = async function(){
+            const isCorrect = (quizChecked.value === "أزرق");
+            const grade = isCorrect ? 100 : 0;
 
-  const name = document.getElementById("studentName").value;
-  const quiz = document.querySelector('input[name="quiz"]:checked');
+            try {
+                // إرسال البيانات مباشرة إلى جدول Cloud Firestore
+                await db.collection("attendance").add({
+                    name: name,
+                    answer: quizChecked.value,
+                    grade: grade,
+                    result: isCorrect ? "Success" : "Fail",
+                    attendance: "حاضر",
+                    time: firebase.firestore.FieldValue.serverTimestamp()
+                });
 
-  if(!name || !quiz){
-    alert("اكتب الاسم واختر الإجابة");
-    return;
-  }
+                msgElement.style.color = "green";
+                msgElement.innerText = "✅ تم تسجيل الحضور والدرجة بنجاح في السيرفر!";
+                
+                // تفريغ الحقول تلقائياً
+                nameInput.value = "";
+                quizChecked.checked = false;
 
-  try {
-    await addDoc(collection(db, "attendance"), {
-      name: name,
-      grade: Number(quiz.value),
-      result: Number(quiz.value) >= 50 ? "Success" : "Fail",
-      attendance: "حاضر",
-      time: new Date()
-    });
-
-    document.getElementById("msg").innerText = "✅ تم تسجيل الحضور بنجاح";
-
-  } catch (e) {
-    console.error(e);
-    document.getElementById("msg").innerText = "❌ حدث خطأ";
-  }
-}
-
-</script>
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                msgElement.style.color = "red";
+                msgElement.innerText = "❌ حدث خطأ أثناء الاتصال بقاعدة البيانات!";
+            }
+        }
+    </script>
 
 </body>
 </html>
