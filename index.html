@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -7,64 +7,59 @@
 
 <style>
 body{
-    font-family:Tahoma,sans-serif;
-    margin:20px;
-    background:#f5f5f5;
+font-family:Tahoma,sans-serif;
+margin:20px;
+background:#f5f5f5;
 }
 
 h1{
-    text-align:center;
-    color:#333;
+text-align:center;
 }
 
 .search-container{
-    text-align:center;
-    margin:20px 0;
+text-align:center;
+margin:20px 0;
 }
 
 #searchInput{
-    width:60%;
-    padding:12px;
-    border:2px solid #4CAF50;
-    border-radius:25px;
-    font-size:16px;
+width:60%;
+padding:12px;
+border:2px solid #4CAF50;
+border-radius:25px;
+font-size:16px;
 }
 
 table{
-    width:100%;
-    border-collapse:collapse;
-    background:white;
+width:100%;
+border-collapse:collapse;
+background:white;
 }
 
 th,td{
-    border:1px solid #ddd;
-    padding:10px;
-    text-align:center;
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
 }
 
 th{
-    background:#4CAF50;
-    color:white;
+background:#4CAF50;
+color:white;
 }
 
 img{
-    width:100px;
-    height:100px;
-    object-fit:cover;
-    border-radius:8px;
+width:100px;
+height:100px;
+object-fit:cover;
+border-radius:8px;
 }
 
 .speak-btn{
-    background:#2196F3;
-    color:white;
-    border:none;
-    padding:5px 8px;
-    border-radius:5px;
-    cursor:pointer;
-}
-
-.speak-btn:hover{
-    background:#1976D2;
+background:#2196F3;
+color:white;
+border:none;
+padding:5px 8px;
+border-radius:5px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -72,12 +67,27 @@ img{
 <body>
 
 <h1>دروس مستر مبارك التفاعلية</h1>
+<!-- نموذج الحضور والاختبار -->
+<div style="background: #f0fdf4; border: 2px solid #22c55e; padding: 20px; border-radius: 10px; max-width: 600px; margin: 20px auto; text-align: right; direction: rtl;">
+    <h3>📝 تسجيل حضور واختبار سريع:</h3>
+    
+    <label><b>اسم الطالب:</b></label><br>
+    <input type="text" id="studentName" placeholder="اكتب اسمك الثلاثي هنا" style="width: 90%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;"><br><br>
+
+    <p><b>سؤال اليوم: ما معنى كلمة (Blue)؟</b></p>
+    <input type="radio" name="quiz" value="100"> أزرق <br>
+    <input type="radio" name="quiz" value="0"> أحمر <br>
+    <input type="radio" name="quiz" value="0"> أخضر <br><br>
+
+    <button onclick="submitExam()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">إرسال الإجابة وتسجيل الحضور</button>
+</div>
+
 
 <div class="search-container">
-    <input
-    type="text"
-    id="searchInput"
-    placeholder="ابحث عن كلمة أو معنى أو جملة">
+<input
+type="text"
+id="searchInput"
+placeholder="ابحث عن كلمة أو معنى أو جملة">
 </div>
 
 <table id="lessonTable">
@@ -97,106 +107,131 @@ img{
 
 let allRowsData=[];
 
-const backupImages = [
-    "https://picsum.photos/200/200?random=1",
-    "https://picsum.photos/200/200?random=2",
-    "https://picsum.photos/200/200?random=3",
-    "https://picsum.photos/200/200?random=4",
-    "https://picsum.photos/200/200?random=5",
-    "https://picsum.photos/200/200?random=6"
-];
-
 fetch('lessons.csv')
-.then(response => response.text())
-.then(data => {
+.then(response=>response.text())
+.then(data=>{
 
-    const rows = data.trim().split(/\r?\n/);
+const rows=data.trim().split(/\r?\n/);
 
-    allRowsData = rows.slice(1);
+allRowsData=rows.slice(1);
 
-    renderTable(allRowsData);
+renderTable(allRowsData);
 
 })
-.catch(error => console.error(error));
+.catch(error=>console.error(error));
 
 function renderTable(rows){
 
-    const tbody = document.querySelector('#lessonTable tbody');
+const tbody=document.querySelector('#lessonTable tbody');
 
-    tbody.innerHTML='';
+tbody.innerHTML='';
 
-    rows.forEach((row,index)=>{
+rows.forEach(row=>{
 
-        const cols = row.split(',');
+const cols=row.split(',');
 
-        if(cols.length >= 4){
+if(cols.length>=5){
 
-            const lessonName = cols[0];
-            const word = cols[1];
-            const meaning = cols[2];
-            const sentence = cols[3];
+const lessonName=cols[0];
+const word=cols[1];
+const meaning=cols[2];
+const sentence=cols[3];
+const imageUrl=cols[4];
 
-            const imageUrl = backupImages[index % backupImages.length];
+const tr=document.createElement('tr');
 
-            const tr = document.createElement('tr');
+tr.innerHTML=`
+<td>${lessonName}</td>
 
-            tr.innerHTML = `
-            <td>${lessonName}</td>
+<td>
+${word}
+<button class="speak-btn"
+onclick="speakText('${word}')">🔊</button>
+</td>
 
-            <td>
-                ${word}
-                <button class="speak-btn"
-                onclick="speakText('${word}')">🔊</button>
-            </td>
+<td>${meaning}</td>
 
-            <td>${meaning}</td>
+<td>
+${sentence}
+<button class="speak-btn"
+onclick="speakText('${sentence}')">🔊</button>
+</td>
 
-            <td>
-                ${sentence}
-                <button class="speak-btn"
-                onclick="speakText('${sentence}')">🔊</button>
-            </td>
+<td>
+<img src="${imageUrl}" alt="صورة">
+</td>
+`;
 
-            <td>
-                <img src="${imageUrl}" alt="صورة">
-            </td>
-            `;
-
-            tbody.appendChild(tr);
-        }
-
-    });
-
+tbody.appendChild(tr);
+}
+});
 }
 
 function speakText(text){
 
-    if('speechSynthesis' in window){
+const speech=new SpeechSynthesisUtterance(text);
 
-        window.speechSynthesis.cancel();
+speech.lang='en-US';
 
-        const speech = new SpeechSynthesisUtterance(text);
+speech.rate=0.9;
 
-        speech.lang = 'en-US';
-
-        speech.rate = 0.9;
-
-        window.speechSynthesis.speak(speech);
-    }
+window.speechSynthesis.speak(speech);
 }
 
 document.getElementById('searchInput')
 .addEventListener('input',function(){
 
-    const value = this.value.toLowerCase();
+const value=this.value.toLowerCase();
 
-    const filtered = allRowsData.filter(row =>
-        row.toLowerCase().includes(value)
-    );
+const filtered=allRowsData.filter(row=>
+row.toLowerCase().includes(value)
+);
 
-    renderTable(filtered);
+renderTable(filtered);
 
 });
+function submitExam() {
+    var nameInput = document.getElementById("studentName").value;
+    var selectedRadio = document.querySelector('input[name="quiz"]:checked');
+    
+    if (!nameInput.trim()) {
+        alert("Please write your name!");
+        return;
+    }
+    if (!selectedRadio) {
+        alert("Please select an answer!");
+        return;
+    }
+    
+    var gradeValue = selectedRadio.value;
+    
+    var payload = {
+        name: nameInput,
+        grade: gradeValue,
+        attendance: "حاضر"
+    };
+    
+    // استبدل هذا الرابط بالرابط الطويل الخاص بك بدقة بين علامتي التنصيص
+    var webAppUrl = "https://script.google.com/macros/s/AKfycbwsoB42GlcJUIwp6Hx1SeTY5mnDuNKvDiAyyAPvbaJp1t2oYWJxvuGkB7nydJ04R86GGA/exec";
+    
+    fetch(webAppUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(function() {
+        alert("Done! Success 🎉");
+        document.getElementById("studentName").value = "";
+        selectedRadio.checked = false;
+    })
+    .catch(function(error) {
+        console.error("Error:", error);
+        alert("Error, try again.");
+    });
+}
 
 </script>
 
