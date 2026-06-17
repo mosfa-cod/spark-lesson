@@ -1,236 +1,142 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دروس مستر مبارك التفاعلية</title>
+<title>نظام الحضور التفاعلي</title>
 
 <style>
 body{
-font-family:Tahoma,sans-serif;
-margin:20px;
-background:#f5f5f5;
+    font-family: Tahoma;
+    background:#f4f4f4;
+    margin:0;
+    padding:20px;
 }
 
-h1{
-text-align:center;
+.container{
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-.search-container{
-text-align:center;
-margin:20px 0;
+h2{
+    text-align:center;
+    color:#2c3e50;
 }
 
-#searchInput{
-width:60%;
-padding:12px;
-border:2px solid #4CAF50;
-border-radius:25px;
-font-size:16px;
+input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
+button{
+    width:100%;
+    padding:10px;
+    background:#27ae60;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:16px;
 }
 
-th,td{
-border:1px solid #ddd;
-padding:10px;
-text-align:center;
+button:hover{
+    background:#219150;
 }
 
-th{
-background:#4CAF50;
-color:white;
+.quiz{
+    margin:15px 0;
+    padding:10px;
+    background:#f9f9f9;
+    border-radius:5px;
 }
 
-img{
-width:100px;
-height:100px;
-object-fit:cover;
-border-radius:8px;
-}
-
-.speak-btn{
-background:#2196F3;
-color:white;
-border:none;
-padding:5px 8px;
-border-radius:5px;
-cursor:pointer;
+.result{
+    text-align:center;
+    margin-top:15px;
+    font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<h1>دروس مستر مبارك التفاعلية</h1>
-<!-- نموذج الحضور والاختبار -->
-<div style="background: #f0fdf4; border: 2px solid #22c55e; padding: 20px; border-radius: 10px; max-width: 600px; margin: 20px auto; text-align: right; direction: rtl;">
-    <h3>📝 تسجيل حضور واختبار سريع:</h3>
-    
-    <label><b>اسم الطالب:</b></label><br>
-    <input type="text" id="studentName" placeholder="اكتب اسمك الثلاثي هنا" style="width: 90%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;"><br><br>
+<div class="container">
 
-    <p><b>سؤال اليوم: ما معنى كلمة (Blue)؟</b></p>
-    <input type="radio" name="quiz" value="100"> أزرق <br>
-    <input type="radio" name="quiz" value="0"> أحمر <br>
-    <input type="radio" name="quiz" value="0"> أخضر <br><br>
+<h2>📘 نظام تسجيل الحضور والاختبار</h2>
 
-    <button onclick="submitExam()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">إرسال الإجابة وتسجيل الحضور</button>
+<input type="text" id="studentName" placeholder="اكتب اسمك">
+
+<div class="quiz">
+<p><b>سؤال:</b> معنى كلمة Blue ؟</p>
+
+<label><input type="radio" name="quiz" value="100"> أزرق</label><br>
+<label><input type="radio" name="quiz" value="0"> أحمر</label><br>
+<label><input type="radio" name="quiz" value="0"> أخضر</label>
 </div>
 
+<button onclick="submitData()">تسجيل الحضور وإرسال</button>
 
-<div class="search-container">
-<input
-type="text"
-id="searchInput"
-placeholder="ابحث عن كلمة أو معنى أو جملة">
+<div class="result" id="result"></div>
+
 </div>
-
-<table id="lessonTable">
-<thead>
-<tr>
-<th>اسم الدرس</th>
-<th>الكلمة</th>
-<th>المعنى</th>
-<th>الجملة</th>
-<th>الصورة</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
 
 <script>
 
-let allRowsData=[];
+// 🔴 ضع رابط Google Apps Script هنا
+var webAppUrl = "https://script.google.com/macros/s/AKfycbyqQKMZ1fTe-4z9Nxus_E2LbKht7czip7NIY8ZkPAdkMG2wZ35Pgs0QqqRPRV-uk7NzCA/exec";
 
-fetch('lessons.csv')
-.then(response=>response.text())
-.then(data=>{
+function submitData(){
 
-const rows=data.trim().split(/\r?\n/);
+    var name = document.getElementById("studentName").value;
+    var quiz = document.querySelector('input[name="quiz"]:checked');
 
-allRowsData=rows.slice(1);
-
-renderTable(allRowsData);
-
-})
-.catch(error=>console.error(error));
-
-function renderTable(rows){
-
-const tbody=document.querySelector('#lessonTable tbody');
-
-tbody.innerHTML='';
-
-rows.forEach(row=>{
-
-const cols=row.split(',');
-
-if(cols.length>=5){
-
-const lessonName=cols[0];
-const word=cols[1];
-const meaning=cols[2];
-const sentence=cols[3];
-const imageUrl=cols[4];
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-<td>${lessonName}</td>
-
-<td>
-${word}
-<button class="speak-btn"
-onclick="speakText('${word}')">🔊</button>
-</td>
-
-<td>${meaning}</td>
-
-<td>
-${sentence}
-<button class="speak-btn"
-onclick="speakText('${sentence}')">🔊</button>
-</td>
-
-<td>
-<img src="${imageUrl}" alt="صورة">
-</td>
-`;
-
-tbody.appendChild(tr);
-}
-});
-}
-
-function speakText(text){
-
-const speech=new SpeechSynthesisUtterance(text);
-
-speech.lang='en-US';
-
-speech.rate=0.9;
-
-window.speechSynthesis.speak(speech);
-}
-
-document.getElementById('searchInput')
-.addEventListener('input',function(){
-
-const value=this.value.toLowerCase();
-
-const filtered=allRowsData.filter(row=>
-row.toLowerCase().includes(value)
-);
-
-renderTable(filtered);
-
-});
-function submitExam() {
-    var nameInput = document.getElementById("studentName").value;
-    var selectedRadio = document.querySelector('input[name="quiz"]:checked');
-    
-    if (!nameInput.trim()) {
-        alert("Please write your name!");
+    if(!name){
+        alert("اكتب الاسم");
         return;
     }
-    if (!selectedRadio) {
-        alert("Please select an answer!");
+
+    if(!quiz){
+        alert("اختر إجابة");
         return;
     }
-    
-    var gradeValue = selectedRadio.value;
-    
+
     var payload = {
-        name: nameInput,
-        grade: gradeValue,
+        name: name,
+        grade: quiz.value,
         attendance: "حاضر"
     };
-    
-    // استبدل هذا الرابط بالرابط الطويل الخاص بك بدقة بين علامتي التنصيص
-    var webAppUrl = "https://script.google.com/macros/s/AKfycbyqQKMZ1fTe-4z9Nxus_E2LbKht7czip7NIY8ZkPAdkMG2wZ35Pgs0QqqRPRV-uk7NzCA/exec";
-    
+
     fetch(webAppUrl, {
         method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify(payload)
     })
-    .then(function() {
-        alert("Done! Success 🎉");
+    .then(res => res.text())
+    .then(data => {
+
+        console.log(data);
+
+        if(data === "Already Marked"){
+            document.getElementById("result").innerHTML = "⚠️ تم تسجيلك مسبقًا";
+        } else {
+            document.getElementById("result").innerHTML = "🎉 تم تسجيل الحضور بنجاح";
+        }
+
         document.getElementById("studentName").value = "";
-        selectedRadio.checked = false;
+        quiz.checked = false;
+
     })
-    .catch(function(error) {
-        console.error("Error:", error);
-        alert("Error, try again.");
+    .catch(err => {
+        console.error(err);
+        document.getElementById("result").innerHTML = "❌ خطأ في الاتصال";
     });
+
 }
 
 </script>
